@@ -2,12 +2,20 @@ import React, { Component } from 'react';
 //reduxForm allows this component to communicate with the formReducer on the src/reducers/index.js file. It is very similar to the connect helper from react-redux. Allows our component to talk directly to the redux store.
 //the field compontent is the redux-form way of signifying and input in the form. It is a React component.
 import { Field, reduxForm } from 'redux-form';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { createPost } from '../actions';
 
 class PostsNew extends Component {
   //We have to pass in this field argument, which is an object to the helper function that is called by the Field component's component property. The field object has a bunch of event handlers and etc that allows the Field component to handle situations such as onChange, onBlur, onFocus without us worrying about them. passing this field object pretty much lets the Field component know that it needs to watch and handle the input element withint the Field.
   renderField(field) {
+    //es6 destrructuring to pull off the meta property, and then to further pull of the touched and error properties that are nested within that meta object.
+    const { meta: { touched, error } } = field;
+    //String templating and ternary opertator to check if the field has been touched and has an error, if so it makes the input field red.
+    const className = `form-group ${touched && error ? 'has-danger' : ''}`;
+
     return (
-      <div className="form-group">
+      <div className={className}>
         {/*Using this spread operator here allows us to pull all of the different keys and values on the object and be passed as props too to the input tag. Instead of having to type onChange={field.input.onChange} and etc. */}
         <label>{field.label}</label>
         <input
@@ -15,14 +23,22 @@ class PostsNew extends Component {
           type="text"
           {...field.input}
         />
-        {/*The field object has access to meta.error, which holds the error messages from the validate function below.*/}
-        {field.meta.error}
+        {/*The field object has access to meta.error, which holds the error messages from the validate function below.
+        Using a ternary operator if the field has been touched, then return the validation error, if not, then return an empty string*/}
+        <div className="text-help">
+          {touched ? error: ''}
+        </div>
       </div>
     );
   }
 
   onSubmit(values) {
-    console.log(values);
+
+    //We call the action creator, and we pass it the values object as well as a newly created callback function that will be called once the request is received by the action creator in actions/index.js
+    this.props.createPost(values, () => {
+      //on the src/index.js file, we use this component, the PostsNew component, inside of the Route component. By doing that, the PostsNew component now has a bunch of react-router-dom methods available on is props. We can use one of those methods, history.push() to navigate us back to the root directory, or whatever we pass it.
+      this.props.history.push('/');
+    });
   }
 
 
@@ -53,6 +69,7 @@ class PostsNew extends Component {
           component={this.renderField}
         />
         <button type="submit" className="btn btn-primary">Submit</button>
+        <Link to="/" className="btn btn-danger">Cancel</Link>
       </form>
     );
   }
@@ -91,4 +108,7 @@ export default reduxForm({
   //This is similar to the name of the form, so that you can have multiple forms at once on the same page, and not get them mixed up. The string can be anything, but it MUST be unique. If two forms have the same name, or string. Their form info will get combined and will overlap with each other.
   form: 'PostsNewForm',
   validate //es6 === validate: validate
-})(PostsNew);
+})(
+  //layering connect within the reduxForm method, this is how you stack up connect-like helper if you need to chain them.
+  connect(null, { createPost }) (PostsNew)
+);

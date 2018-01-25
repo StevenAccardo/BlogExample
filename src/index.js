@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import reducers from './reducers';
 import PostsIndex from './components/posts_index';
 import PostsNew from './components/posts_new';
+import PostsShow from './components/posts_show';
 
 
 const createStoreWithMiddleware = applyMiddleware(promise)(createStore);
@@ -25,6 +26,8 @@ ReactDOM.render(
         {/*Switch usually incases a few Route Components. Its purpose is to only allow rendering of the first component whos path matches the current url. because it uses the first component, you want to place your most specific paths first.*/}
         <Switch>
           <Route path="/posts/new" component={PostsNew} />
+          {/*PostsShow route is the second one because the :id is a wild card and if we visted posts/new, the new portion would match the wildcard and would render the PostsShow component instead of the PostNew.*/}
+          <Route path="/posts/:id" component={PostsShow} />
           <Route path="/" component={PostsIndex} />
         </Switch>
       </div>
