@@ -7,6 +7,7 @@ import promise from 'redux-promise';
 //Route does all of the hard work. Route is a React component that we can render inside any other react component that we use in our application. Route determines what components should be shown based off the changes in the url.
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import reducers from './reducers';
+//Import components and containers to use with the Route component.
 import PostsIndex from './components/posts_index';
 import PostsNew from './components/posts_new';
 import PostsShow from './components/posts_show';

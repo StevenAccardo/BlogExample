@@ -14,6 +14,7 @@ export default function(state = {}, action) {
 
       //es6 method
       //using data interpelation to create a new key on the object and a corresponding value.
+      //this will overwrite the same post, if we alredy fetched that one before. So if a post with an ID of 5 is already on the state, and we fetch it again, it will just overwrite it with the new one.
       return { ...state, [action.payload.data.id]: action.payload.data };
 
     case FETCH_POSTS:
